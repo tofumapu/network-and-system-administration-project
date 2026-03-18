@@ -1,0 +1,45 @@
+services:
+  web1:
+    build: ../nginx-webserver
+    container_name: ssl_web1
+    restart: always
+    expose:
+      - "443"
+    hostname: web1.local
+    environment:
+      - "SERVER_NAME=Web Server #1"
+
+  web2:
+    build: ../nginx-webserver
+    container_name: ssl_web2
+    restart: always
+    expose:
+      - "443"
+    hostname: web2.local
+    environment:
+      - "SERVER_NAME=Web Server #2"
+
+  web3:
+    build: ../nginx-webserver
+    container_name: ssl_web3
+    restart: always
+    expose:
+      - "443"
+    hostname: web3.local
+    environment:
+      - "SERVER_NAME=Web Server #3"
+
+  haproxy:
+    image: haproxy:alpine
+    container_name: haproxy_ssl
+    restart: always
+    ports:
+      - "443:443"
+      - "8080:80"
+    volumes:
+      - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+      - ./certs/haproxy-cert.pem:/usr/local/etc/haproxy/certs/haproxy-cert.pem:ro
+    depends_on:
+      - web1
+      - web2
+      - web3

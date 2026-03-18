@@ -1,0 +1,34 @@
+services:
+  haproxy:
+    image: haproxy:alpine
+    container_name: haproxy_layer7
+    restart: always
+    volumes:
+      - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    ports:
+      - "8080:80"
+    depends_on:
+      - web1
+      - web2
+      - web3
+
+  web1:
+    build: ../nginx-webserver
+    container_name: l7_web1
+    restart: always
+    environment:
+      - "SERVER_NAME=Web Server #1"
+
+  web2:
+    build: ../nginx-webserver
+    container_name: l7_web2
+    restart: always
+    environment:
+      - "SERVER_NAME=Web Server #2"
+
+  web3:
+    build: ../nginx-webserver
+    container_name: l7_web3
+    restart: always
+    environment:
+      - "SERVER_NAME=Web Server #3"
